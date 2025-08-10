@@ -13,5 +13,10 @@ migrate.init_app(app,db)
 
 app.register_blueprint(task_routes)
 
+@app.route("/", methods=["GET"])
+def home():
+    return "API está online 🚀"
+
+
 if __name__ == "__main__":
     app.run(debug=True)
