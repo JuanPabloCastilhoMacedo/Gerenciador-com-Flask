@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify, current_app
-from config import db
-from models import User, PasswordResetToken
+from models import db, User, PasswordResetToken
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta, timezone
 import sendgrid

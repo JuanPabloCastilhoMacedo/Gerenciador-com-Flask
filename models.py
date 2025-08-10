@@ -1,6 +1,8 @@
-from config import db
 from datetime import datetime, timedelta, timezone
+from flask_sqlalchemy import SQLAlchemy
 import uuid
+
+db = SQLAlchemy()
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
