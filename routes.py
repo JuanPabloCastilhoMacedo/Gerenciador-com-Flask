@@ -1,23 +1,36 @@
 from flask import Blueprint, request, jsonify
-from models import Task
-from config import db
+from models import db, User
+import bcrypt
 
-task_routes = Blueprint("task_routes", __name__)
+bp = Blueprint('routes', __name__)
 
-@task_routes.route("/tasks", methods=["GET"])
-def get_tasks():
-    tasks = Task.query.all()
-    return jsonify([{
-        "id": t.id,
-        "title": t.title,
-        "description": t.description,
-        "status": t.status
-    } for t in tasks])
+@bp.route('/register', methods=['POST'])
+def register():
+    dados = request.json
+    email = dados.get("email")
+    senha = dados.get("senha")
 
-@task_routes.route("/tasks", methods=["POST"])
-def create_task():
-    data = request.json
-    task = Task(title=data["title"], description=data.get("description"))
-    db.session.add(task)
+    if not email or not senha:
+        return jsonify({"Status": "ERRO", "mensagem": "Email e senha são obrigatórios"}), 400
+
+    if User.query.filter_by(email=email).first():
+        return jsonify({"Status": "ERRO", "mensagem": "Email já cadastrado"}), 409
+
+    senha_hash = bcrypt.hashpw(senha.encode(), bcrypt.gensalt()).decode()
+    novo_usuario = User(email=email, senha_hash=senha_hash)
+    db.session.add(novo_usuario)
     db.session.commit()
-    return jsonify({"message": "Tarefa criada"}), 201
+
+    return jsonify({"Status": "OK", "mensagem": "Usuário registrado com sucesso"})
+
+@bp.route('/login', methods=['POST'])
+def login():
+    dados = request.json
+    email = dados.get("email")
+    senha = dados.get("senha")
+
+    usuario = User.query.filter_by(email=email).first()
+    if usuario and bcrypt.checkpw(senha.encode(), usuario.senha_hash.encode()):
+        return jsonify({"Status": "OK", "mensagem": "Login realizado"})
+    else:
+        return jsonify({"Status": "ERRO", "mensagem": "Credenciais inválidas"})
