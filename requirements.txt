@@ -5,3 +5,4 @@ flask-migrate
 pymysql
 gunicorn
 bcrypt
+sendgrid
