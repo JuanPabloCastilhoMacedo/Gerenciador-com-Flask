@@ -4,7 +4,7 @@ import os
 db = SQLAlchemy()
 migrate = Migrate()
 
-class config:
+class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv(
         "DATABASE_URL",
         "mysql+pymysql://root:wMcsHGxbFmIdpMTixKKhWOwsXdRNNUFq@mysql.railway.internal:3306/railway"
